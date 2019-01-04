@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzw.mapper.SysRoleMapper">
+  <select id="selectIdPage" resultType="java.lang.Long">
+		select sys_role.id_ from sys_role
+		  	<where>
+				<if test="cm.roleType != null and cm.roleType != ''">
+					 and sys_role.role_type = #{cm.roleType}
+				</if>
+				<if test="cm.roleName != null and cm.roleName != ''">
+					 and sys_role.role_name like CONCAT(#{cm.roleName},'%')
+				</if>
+		  	</where>
+	</select>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzw.mapper.SysUserLoginMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Long">
+		select id_ from sys_user_login
+		<where>
+			<if test="cm.enable != null and cm.enable != ''">
+				and sys_user_inf.enable_ = #{cm.enable}
+			</if>
+		</where>
+	</select>
+</mapper>
