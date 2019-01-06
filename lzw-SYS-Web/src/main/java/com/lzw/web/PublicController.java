@@ -83,10 +83,11 @@ public class PublicController extends AbstractController<ISysProvider> {
 			//若系统中不存在此账号，不发送短信
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("account", phone.toString());
-			Parameter parameter = new Parameter("sysUserService", "queryList").setMap(params);
-			logger.info("{} execute sysUserService.queryList  start...", parameter.getNo());
-			List<SysUser> list = (List<SysUser>) provider.execute(parameter).getList();
-			logger.info("{} execute sysUserService.queryList end.", parameter.getNo());
+			params.put("enable", 1);
+			Parameter parameter = new Parameter("sysUserLoginService", "queryList").setMap(params);
+			logger.info("{} execute sysUserLoginService.queryList  start...", parameter.getNo());
+			List<?> list = provider.execute(parameter).getList();
+			logger.info("{} execute sysUserLoginService.queryList end.", parameter.getNo());
 			if(list.size() == 0){
 				modelMap.put("msg", "您输入的手机号，系统中不存在，请确认后再试。");
 				return setModelMap(modelMap, HttpCode.CONFLICT);

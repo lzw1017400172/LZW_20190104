@@ -35,24 +35,4 @@ public final class LoginHelper {
 			throw new LoginException(Resources.getMessage("LOGIN_FAIL"), e);
 		}
 	}
-
-	/**用户登录	免密码登录*/
-	public static final Boolean login(String account) {
-		UsernamePasswordTokenExt tokenExt = new UsernamePasswordTokenExt(account);
-		tokenExt.setRememberMe(true);
-		Subject subject = SecurityUtils.getSubject();
-		try {
-			subject.login(tokenExt);
-			return subject.isAuthenticated();
-		} catch (LockedAccountException e) {
-			throw new LoginException(Resources.getMessage("ACCOUNT_LOCKED", tokenExt.getPrincipal()));
-		} catch (DisabledAccountException e) {
-			throw new LoginException(Resources.getMessage("ACCOUNT_DISABLED", tokenExt.getPrincipal()));
-		} catch (ExpiredCredentialsException e) {
-			throw new LoginException(Resources.getMessage("ACCOUNT_EXPIRED", tokenExt.getPrincipal()));
-		} catch (Exception e) {
-			throw new LoginException(Resources.getMessage("LOGIN_FAIL"), e);
-		}
-	}
-	
 }

@@ -1,6 +1,5 @@
 package com.lzw.core.support.login;
 
-import com.lzw.core.Constants;
 import org.apache.shiro.authc.UsernamePasswordToken;
 
 public class UsernamePasswordTokenExt extends UsernamePasswordToken{
@@ -17,51 +16,34 @@ public class UsernamePasswordTokenExt extends UsernamePasswordToken{
     private boolean rememberMe = false;
 
     private String host;
-    
-    /**
-     * 登录类型.用来免密码登录
-     */
-    private String loginType;
-
-    public UsernamePasswordTokenExt() {
-    }
-
-    /**
-     * 免密码登录
-     * @param username
-     */
-    public UsernamePasswordTokenExt(final String username) {
-        this(username, null, false, null,Constants.LOGINTYPE_NOPASSWD);
-    }
 
     public UsernamePasswordTokenExt(final String username, final char[] password, final String host) {
-        this(username, password, false, host,Constants.LOGINTYPE_PASSWORD);
+        this(username, password, false, host);
     }
 
     public UsernamePasswordTokenExt(final String username, final String password, final String host) {
-        this(username, password != null ? password.toCharArray() : null, false, host,Constants.LOGINTYPE_PASSWORD);
+        this(username, password != null ? password.toCharArray() : null, false, host);
     }
 
     public UsernamePasswordTokenExt(final String username, final char[] password, final boolean rememberMe) {
-        this(username, password, rememberMe, null,Constants.LOGINTYPE_PASSWORD);
+        this(username, password, rememberMe, null);
     }
 
     public UsernamePasswordTokenExt(final String username, final String password, final boolean rememberMe) {
-        this(username, password != null ? password.toCharArray() : null, rememberMe, null,Constants.LOGINTYPE_PASSWORD);
+        this(username, password != null ? password.toCharArray() : null, rememberMe, null);
     }
 
     public UsernamePasswordTokenExt(final String username, final String password,
                                  final boolean rememberMe, final String host) {
-        this(username, password != null ? password.toCharArray() : null, rememberMe, host,Constants.LOGINTYPE_PASSWORD);
+        this(username, password != null ? password.toCharArray() : null, rememberMe, host);
     }
 
     public UsernamePasswordTokenExt(final String username, final char[] password,
-                                    final boolean rememberMe, final String host, final String loginType) {
+                                    final boolean rememberMe, final String host) {
         this.username = username;
         this.password = password;
         this.rememberMe = rememberMe;
         this.host = host;
-        this.loginType = loginType;
     }
 
 	public String getUsername() {
@@ -105,14 +87,6 @@ public class UsernamePasswordTokenExt extends UsernamePasswordToken{
         this.rememberMe = rememberMe;
     }
 
-    public String getLoginType() {
-		return loginType;
-	}
-
-	public void setLoginType(String loginType) {
-		this.loginType = loginType;
-	}
-
 	public void clear() {
         this.username = null;
         this.host = null;
@@ -133,7 +107,6 @@ public class UsernamePasswordTokenExt extends UsernamePasswordToken{
         sb.append(" - ");
         sb.append(username);
         sb.append(", rememberMe=").append(rememberMe);
-        sb.append(", loginType=").append(loginType);
         if (host != null) {
             sb.append(" (").append(host).append(")");
         }

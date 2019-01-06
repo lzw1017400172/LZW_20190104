@@ -48,14 +48,6 @@ public interface Constants {
     public static final String ALLUSER_NUMBER = "SYSTEM:" + CACHE_NAMESPACE + "ALLUSER_NUMBER";
     /** 验证码 */
     public static final String VERIFICATION_CODE = WWW_NAMESPACE + "VERIFICATION_CODE:";
-    /** 密码登录 */
-    public static final String LOGINTYPE_PASSWORD = "PASSWORD";
-    /** 免密码登录 */
-    public static final String LOGINTYPE_NOPASSWD = "NOPASSWD";
-
-
-
-
 
 
 

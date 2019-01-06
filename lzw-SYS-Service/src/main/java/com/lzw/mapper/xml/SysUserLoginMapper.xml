@@ -8,7 +8,10 @@
 		select id_ from sys_user_login
 		<where>
 			<if test="cm.enable != null and cm.enable != ''">
-				and sys_user_inf.enable_ = #{cm.enable}
+				and sys_user_login.enable_ = #{cm.enable}
+			</if>
+			<if test="cm.account != null and cm.account != ''">
+				and sys_user_login.account_ = #{cm.account}
 			</if>
 		</where>
 	</select>

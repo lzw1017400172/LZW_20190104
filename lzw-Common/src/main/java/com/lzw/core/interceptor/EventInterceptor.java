@@ -1,6 +1,7 @@
 package com.lzw.core.interceptor;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -83,6 +84,7 @@ public class EventInterceptor extends BaseInterceptor {
 			record.setRequestUri(request.getServletPath());
 			record.setClientHost(WebUtil.getHost(request));
 			record.setUserAgent(userAgent);
+			record.setCreateTime(new Date());
 			if (path.contains("/upload/")) {
 				record.setParameters("");
 			} else {

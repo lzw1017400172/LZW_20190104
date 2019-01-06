@@ -4,9 +4,6 @@
 	<select id="selectIdPage" resultType="java.lang.Long">
 		select id_ from sys_session
 		<where>
-			<if test="cm.type != null and cm.type != ''">
-				 and sys_session.type_ = #{cm.type}
-			</if>
 			<if test="cm.keyword != null">
 				and (account_ like CONCAT('%',#{cm.keyword},'%') or session_id like CONCAT('%',#{cm.keyword},'%')
 				or ip_ like CONCAT('%',#{cm.keyword},'%'))

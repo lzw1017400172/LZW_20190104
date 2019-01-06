@@ -6,6 +6,7 @@ import com.lzw.core.support.Assert;
 import com.lzw.core.support.HttpCode;
 import com.lzw.core.util.SecurityUtil;
 import com.lzw.core.util.UploadUtil;
+import com.lzw.model.SysUserLogin;
 import com.lzw.provider.ISysProvider;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +31,7 @@ import java.util.Map;
 public class SysUserController extends AbstractController<ISysProvider> {
 	
 	public String getService() {
-		return "sysUserService";
+		return "sysUserLoginService";
 	}
 
 	// 分页查询用户
@@ -49,141 +50,92 @@ public class SysUserController extends AbstractController<ISysProvider> {
 		return super.queryList(modelMap, param);
 	}
 
-	/**	enable = 1正常；= 2 禁用 ；		login = 1可以登录； =2禁止登陆	*/
-	@ApiOperation(value = "操作用户")
-	// @RequiresPermissions("sys.base.user.delete")
-	@PostMapping(value = "/operation/{type:enable|disable|landing|notlanding}")
-	public Object delete(ModelMap modelMap, @PathVariable("type") String type,@RequestBody SysUser param) {
-		Assert.notNull(param.getId(), "ID");
-		Parameter parameter = new Parameter(getService(), "queryById").setId(param.getId());
-		parameter = provider.execute(parameter);
-        param = parameter == null ? null : (SysUser)parameter.getModel();
-		if(null == param){
-			return setModelMap(modelMap, HttpCode.GONE);
-		}
-		
-		SysUser user = new SysUser();
-		user.setId(param.getId());
-		switch (type) {
-			case "enable":
-				if(param.getEnable() == 1){
-					return setSuccessModelMap(modelMap);
-				}
-				user.setEnable(1);
-				break;
-			case "disable":
-				if(param.getEnable() == 2){
-					return setSuccessModelMap(modelMap);
-				}
-				user.setEnable(2);
-				break;
-			case "landing":
-				if(param.getLogin() == 1){
-					return setSuccessModelMap(modelMap);
-				}
-				user.setLogin(1);
-				break;
-			case "notlanding":
-				if(param.getLogin() == 2){
-					return setSuccessModelMap(modelMap);
-				}
-				user.setLogin(2);
-				break;
-			default:
-				break;
-		}
-
-		parameter = new Parameter(getService(), "update").setModel(user);
-        provider.execute(parameter);
-        return setSuccessModelMap(modelMap);
-	}
-
 	// 当前用户
-	@ApiOperation(value = "当前用户信息")
-	@GetMapping(value = "/read/current")
-	public Object current(ModelMap modelMap) {
-		SysUser param = new SysUser();
-		param.setId(getCurrUser());
-		return super.get(modelMap, param);
-	}
+//	@ApiOperation(value = "当前用户信息")
+//	@GetMapping(value = "/read/current")
+//	public Object current(ModelMap modelMap) {
+//		SysUser param = new SysUser();
+//		param.setId(getCurrUser());
+//		return super.get(modelMap, param);
+//	}
 
-	@ApiOperation(value = "修改个人信息")
-	@PostMapping(value = "/update/person")
-	public Object updatePerson(ModelMap modelMap, @RequestBody SysUser param) {
-		param.setId(getCurrUser());
-		param.setPassword(null);
-		Assert.isNotBlank(param.getAccount(), "ACCOUNT");
-		Assert.length(param.getAccount(), 3, 15, "ACCOUNT");
-		return super.update(modelMap, param);
-	}
-
-	@ApiOperation(value = "修改用户头像")
-	@PostMapping(value = "/update/avatar")
-	public Object updateAvatar(HttpServletRequest request, ModelMap modelMap) {
-		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
-		MultipartFile file = req.getFile("file");
-		List<String> fileNames = UploadUtil.uploadImageData(request);
-		if (fileNames.size() > 0) {
-			SysUser param = new SysUser();
-			param.setId(getCurrUser());
-			for (int i = 0; i < fileNames.size(); i++) {
-				String filePath = UploadUtil.getUploadDir(request)
-						+ fileNames.get(i);
-				String avatar = UploadUtil.remove2DFS("sysUser",
-						"U" + param.getId(), filePath).getRemotePath();
-				param.setAvatar(avatar);
-			}
-			modelMap.put("data", param);
-			return super.update(modelMap, param);
-		} else {
-			modelMap.put("msg", "请选择要上传的文件！");
-			return setModelMap(modelMap, HttpCode.BAD_REQUEST);
-		}
-	}
-
-	/**
-	 * 修改密码
-	 * 
-	 */
-	@RequestMapping("/update/password")
-	public Object updateUserPwd(ModelMap modelMap,
-			@RequestBody Map<String, Object> param) {
-		// int userId,String oldPwd,String newPwd
-		Assert.isNotBlank((String) param.get("oldPassword"), "OLDPASSWORD");
-		Assert.isNotBlank((String) param.get("password"), "password");
-		Long userId = getCurrUser();
-		Parameter updatepParameter = new Parameter(getService(), "queryById")
-				.setId(userId);
-		SysUser model = (SysUser) provider.execute(updatepParameter).getModel();
-		if (SecurityUtil.validatePassword((String) param.get("oldPassword"),
-				model.getPassword())) {
-			model.setPassword(SecurityUtil.entryptPassword((String) param
-					.get("password")));
-			Parameter passParameter = new Parameter(getService(), "update")
-					.setModel(model);
-			provider.execute(passParameter);
-			return setModelMap(modelMap, HttpCode.OK);
-		} else {
-			modelMap.put("msg", "原始密码输入错误");
-			return setModelMap(modelMap, HttpCode.INTERNAL_SATICEFY_ERROR);
-		}
-
-	}
-
-	/**
-	 * 重置密码
-	 * 
-	 * @param modelMap
-	 * @param param
-	 * @return
-	 */
-	@PostMapping("/update/reset_userpwd")
-	// @RequiresPermissions("sys.base.user.delete")
-	public Object resetUserPwd(ModelMap modelMap, @RequestBody SysUser param) {
-		Assert.notNull(param.getId(), "ID");
-		param.setPassword(StringUtils.isNotBlank(param.getPassword()) ? SecurityUtil.entryptPassword(param.getPassword()) :SecurityUtil.entryptPassword("123456"));
-		return super.update(modelMap, param);
-	}
+//	@ApiOperation(value = "修改个人信息")
+//	@PostMapping(value = "/update/person")
+//	public Object updatePerson(ModelMap modelMap, @RequestBody SysUser param) {
+//		param.setId(getCurrUser());
+//		param.setPassword(null);
+//		Assert.isNotBlank(param.getAccount(), "ACCOUNT");
+//		Assert.length(param.getAccount(), 3, 15, "ACCOUNT");
+//		return super.update(modelMap, param);
+//	}
+//
+//	@ApiOperation(value = "修改用户头像")
+//	@PostMapping(value = "/update/avatar")
+//	public Object updateAvatar(HttpServletRequest request, ModelMap modelMap) {
+//		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+//		MultipartFile file = req.getFile("file");
+//		List<String> fileNames = UploadUtil.uploadImageData(request);
+//		if (fileNames.size() > 0) {
+//			SysUser param = new SysUser();
+//			param.setId(getCurrUser());
+//			for (int i = 0; i < fileNames.size(); i++) {
+//				String filePath = UploadUtil.getUploadDir(request)
+//						+ fileNames.get(i);
+//				String avatar = UploadUtil.remove2DFS("sysUser",
+//						"U" + param.getId(), filePath).getRemotePath();
+//				param.setAvatar(avatar);
+//			}
+//			modelMap.put("data", param);
+//			return super.update(modelMap, param);
+//		} else {
+//			modelMap.put("msg", "请选择要上传的文件！");
+//			return setModelMap(modelMap, HttpCode.BAD_REQUEST);
+//		}
+//	}
+//
+//	/**
+//	 * 修改密码
+//	 *
+//	 */
+//	@RequestMapping("/update/password")
+//	public Object updateUserPwd(ModelMap modelMap,
+//			@RequestBody Map<String, Object> param) {
+//		// int userId,String oldPwd,String newPwd
+//		Assert.isNotBlank((String) param.get("oldPassword"), "OLDPASSWORD");
+//		Assert.isNotBlank((String) param.get("password"), "password");
+//		Long userId = getCurrUser();
+//		Parameter updatepParameter = new Parameter(getService(), "queryById")
+//				.setId(userId);
+//		SysUser model = (SysUser) provider.execute(updatepParameter).getModel();
+//		if (SecurityUtil.validatePassword((String) param.get("oldPassword"),
+//				model.getPassword())) {
+//			model.setPassword(SecurityUtil.entryptPassword((String) param
+//					.get("password")));
+//			Parameter passParameter = new Parameter(getService(), "update")
+//					.setModel(model);
+//			provider.execute(passParameter);
+//			return setModelMap(modelMap, HttpCode.OK);
+//		} else {
+//			modelMap.put("msg", "原始密码输入错误");
+//			return setModelMap(modelMap, HttpCode.INTERNAL_SATICEFY_ERROR);
+//		}
+//
+//	}
+//
+//	/**
+//	 * 重置密码
+//	 *
+//	 * @param modelMap
+//	 * @param param
+//	 * @return
+//	 */
+//	@PostMapping("/update/reset_userpwd")
+//	// @RequiresPermissions("sys.base.user.delete")
+//	public Object resetUserPwd(ModelMap modelMap, @RequestBody SysUser param) {
+//		Assert.notNull(param.getId(), "ID");
+//		param.setPassword(StringUtils.isNotBlank(param.getPassword()) ? SecurityUtil.entryptPassword(param.getPassword()) :SecurityUtil.entryptPassword("123456"));
+//		return super.update(modelMap, param);
+//	}
 
 	
 	// 获取菜单
@@ -239,20 +191,20 @@ public class SysUserController extends AbstractController<ISysProvider> {
 //		return setSuccessModelMap(modelMap,treeMenuList);
 //	}
 
-	@ApiOperation(value = "获取当前登录人EncryptAccount")
-	@PostMapping(value = "/get_encrypt_account")
-	public Object getAccountMd5(ModelMap modelMap) {
-		Long userId = getCurrUser();
-		Parameter parameter = new Parameter(getService(), "queryById")
-				.setId(userId);
-		logger.info("{} execute queryById start...", parameter.getNo());
-		SysUser result = (SysUser) provider.execute(parameter).getModel();
-		logger.info("{} execute queryById end.", parameter.getNo());
-		
-		String account = result.getAccount();
-		String encrypt32Md5 = SecurityUtil.encrypt32Md5(account);
-		return setSuccessModelMap(modelMap, encrypt32Md5);
-	}
+//	@ApiOperation(value = "获取当前登录人EncryptAccount")
+//	@PostMapping(value = "/get_encrypt_account")
+//	public Object getAccountMd5(ModelMap modelMap) {
+//		Long userId = getCurrUser();
+//		Parameter parameter = new Parameter(getService(), "queryById")
+//				.setId(userId);
+//		logger.info("{} execute queryById start...", parameter.getNo());
+//		SysUser result = (SysUser) provider.execute(parameter).getModel();
+//		logger.info("{} execute queryById end.", parameter.getNo());
+//
+//		String account = result.getAccount();
+//		String encrypt32Md5 = SecurityUtil.encrypt32Md5(account);
+//		return setSuccessModelMap(modelMap, encrypt32Md5);
+//	}
 	
 //	@ApiOperation(value = "手机短信--找回密码，验证短信，返回 租户列表")
 //	@PostMapping("/anon/retrieve_password/validate")

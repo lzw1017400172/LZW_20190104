@@ -13,10 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -90,7 +87,7 @@ public class Realm extends AuthorizingRealm {
 	// 登录验证
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken)
 			throws AuthenticationException {
-		UsernamePasswordTokenExt token = (UsernamePasswordTokenExt) authcToken;
+		UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("enable", 1);
 		params.put("account", token.getUsername());
@@ -104,29 +101,19 @@ public class Realm extends AuthorizingRealm {
 				logger.warn("此账号已经被禁止登陆。", token.getUsername());
 				return null;
 			}
-			String password = null;
-			if(Constants.LOGINTYPE_PASSWORD.equals(token.getLoginType())){//账号密码登录
-				StringBuilder sb = new StringBuilder(100);
-				for (int i = 0; i < token.getPassword().length; i++) {
-					sb.append(token.getPassword()[i]);
-				}
-				password = sb.toString();
-				if (!SecurityUtil.validatePassword(password, user.getPassword())) {
-					logger.warn("USER [{}] PASSWORD IS WRONG: {}", token.getUsername(), password);
-					return null;
-				}
-			} else {//无密码登录
-				//随便一个密码即可
-				password = Constants.LOGINTYPE_NOPASSWD;
-				token.setPassword(password.toCharArray());
+			StringBuilder password = new StringBuilder(100);
+			for (int i = 0; i < token.getPassword().length; i++) {
+				password.append(token.getPassword()[i]);
 			}
-			
+			if (!SecurityUtil.validatePassword(password.toString(), user.getPassword())) {
+				logger.warn("USER [{}] PASSWORD IS WRONG: {}", token.getUsername(), password);
+				return null;
+			}
 			saveData(user);
-
-			AuthenticationInfo authcInfo = 
-					new SimpleAuthenticationInfo(user.getId(), password,user.getAccount());
+			AuthenticationInfo authcInfo =
+					new SimpleAuthenticationInfo(user.getId(), token.getPassword(),user.getAccount());
 			//第一个参数，会作为权限缓存的键  Constants.CACHE_NAMESPACE + "shiro_redis_cache:" + 第一个参数
-			//第二个参数 是真实密码
+			//第二个参数 是真实密码,现在使用传递的密码，因为上面已经验证过了，这里让通过。
 			//无密码登录，只需要将AuthenticationInfo和AuthenticationToken设置两个相同的密码即可。
 			return authcInfo;
 		} else {

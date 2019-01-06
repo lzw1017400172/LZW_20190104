@@ -143,7 +143,7 @@ public class LoginController extends AbstractController<ISysProvider> {
 			modelMap.put("msg", Resources.getMessage("登录失败，账号被禁止登录!!"));
 			return setModelMap(modelMap, HttpCode.LOGIN_FAIL);
 		}
-		if (LoginHelper.login(user.getAccount())) {
+		if (LoginHelper.login(user.getAccount(),list.get(0).getPassword())) {
 			return setSuccessModelMap(modelMap);
 		}
 		modelMap.put("msg", Resources.getMessage("登录失败，账号或者密码错误!!"));
@@ -254,11 +254,7 @@ public class LoginController extends AbstractController<ISysProvider> {
 					modelMap.put("msg", "已经登陆，请不要重复登陆!!");
 					return setModelMap(modelMap, HttpCode.CONFLICT);
 				}
-				if (LoginHelper.login(user.getAccount())) {
-					return setSuccessModelMap(modelMap);
-				}
-				modelMap.put("msg", Resources.getMessage("登录失败，账号或者密码错误!!"));
-				return setModelMap(modelMap, HttpCode.LOGIN_FAIL);
+				return accountLogin(user,modelMap);
 			}else{
 				modelMap.put("msg", "和短信密码码不一致，请重新输入！");
 				return setModelMap(modelMap, HttpCode.CONFLICT);

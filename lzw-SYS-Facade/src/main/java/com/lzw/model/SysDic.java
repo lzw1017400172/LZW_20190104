@@ -1,8 +1,8 @@
 package com.lzw.model;
 
-import com.lzw.core.base.BaseModel;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.lzw.core.base.BaseModel;
 
 @TableName("sys_dic")
 @SuppressWarnings("serial")
@@ -19,28 +19,6 @@ public class SysDic extends BaseModel {
     private String parentType;
     @TableField("parent_code")
     private String parentCode;
-    
-    /**
-     * 租户id
-     */
-	@TableField("tenant_id")
-	private Long tenantId;
-	
-	/**
-	 * @return the tenantId
-	 */
-	public Long getTenantId() {
-		return tenantId;
-	}
-
-	/**
-	 * @param tenantId
-	 *            the tenantId to set
-	 */
-	public void setTenantId(Long tenantId) {
-		this.tenantId = tenantId;
-	}
-
 	/**
 	 * @return the type
 	 */
